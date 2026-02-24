@@ -1,0 +1,81 @@
+//| mill-jvm-version: system
+//| mvnDeps:
+//|   - "org.typelevel::scalac-options:0.1.9"
+//|   - "com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION"
+
+package build
+import mill.*, scalalib.*, publish.*
+import org.typelevel.scalacoptions.*
+import mill.contrib.buildinfo.BuildInfo
+
+object `mill-explicit-dependencies`
+    extends ScalaModule,
+      PublishModule,
+      SonatypeCentralPublishModule,
+      BuildInfo {
+
+  def artifactName = "mill-explicit-dependencies"
+
+  def millVersion = "1.0.0"
+
+  def publishVersion = "1.0.0-SNAPSHOT"
+
+  // versions are aligned with ones used by mill of the given version
+  def scalaVersion = "3.7.1"
+  def zincVersion = "1.10.8"
+  def upickleVersion = "4.2.1"
+
+  def scalacOptions = {
+    super.scalacOptions() ++ ScalacOptions.tokensForVersion(
+      ScalaVersion.unsafeFromString(scalaVersion()),
+      ScalacOptions.default ++ ScalacOptions.fatalWarningOptions
+    )
+  }
+
+  def compileMvnDeps = Seq(
+    mvn"com.lihaoyi::upickle-core:$upickleVersion",
+    mvn"com.lihaoyi::mill-libs:$millVersion",
+    mvn"com.lihaoyi::mill-contrib-buildinfo:$millVersion"
+  )
+
+  def mvnDeps = Seq(
+    mvn"org.scala-sbt:zinc-persist_2.13:$zincVersion"
+  )
+
+  def buildInfoPackageName = "digital.junkie.milledependencies"
+  def buildInfoMembers = Seq(
+    BuildInfo.Value("version", publishVersion())
+  )
+
+  object test extends ScalaTests, TestModule.Utest {
+
+    def scalacOptions = super.scalacOptions()
+
+    val configVersion = "1.12.2"
+    val hashMapVersion = "1.1.0"
+
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::mill-libs:$millVersion",
+      mvn"com.lihaoyi::mill-testkit:$millVersion",
+      mvn"org.virtuslab.scala-cli::config:$configVersion",
+      mvn"io.github.alexarchambault:concurrent-reference-hash-map:$hashMapVersion"
+    )
+  }
+
+  def pomSettings = PomSettings(
+    description = "Explicit Dependencies Mill Plugin",
+    organization = "digital.junkie",
+    url = "https://github.com/MarmaladeSky/mill-explicit-dependencies",
+    licenses = Seq(License.MIT),
+    versionControl =
+      VersionControl.github("MarmaladeSky", "mill-explicit-dependencies"),
+    developers = Seq(
+      Developer(
+        "88D15D7AF7672C866A8F839C56B2CCA5F83AECB4",
+        "David Akermann",
+        "https://github.com/MarmaladeSky"
+      )
+    )
+  )
+
+}

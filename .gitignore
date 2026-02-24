@@ -1,0 +1,13 @@
+# Build output
+out/
+
+# IDEs
+.bsp/
+.metals/
+.vscode/
+.idea
+
+# Nix
+*.nix
+flake.lock
+
