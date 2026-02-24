@@ -8,13 +8,15 @@ Set up the plugin at your **build.mill**:
 
 ```scala
 //| mvnDeps: [
-//|   "digital.junkie::mill-explicit-dependencies:1.0.0"
+//|   "digital.junkie::mill-explicit-dependencies:$MILL_VERSION"
 //| ]
 object myproject extends ScalaModule with ExplicitDependencies {
 
   // [optional] filter out unwanted results
   override def undeclaredCompileDependenciesFilter: Seq[Dep] = Seq.empty
   override def unusedCompileDependenciesFilter: Seq[Dep] = Seq.empty
+  override def undeclaredCompileModulesFilter: Seq[Module] = Seq.empty
+  override def unusedCompileModulesFilter: Seq[Module] = Seq.empty
 }
 ```
 

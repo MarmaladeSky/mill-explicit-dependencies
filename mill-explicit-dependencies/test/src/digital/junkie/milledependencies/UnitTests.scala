@@ -22,7 +22,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(UnusedDependencies, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UndeclaredReport(undeclared), _)) =
+          val Right(UnitTester.Result(UndeclaredReport(undeclared, _), _)) =
             eval(
               UnusedDependencies.undeclaredCompileDependenciesAnon
             ).runtimeChecked
@@ -35,7 +35,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(UnusedDependencies, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UnusedReport(unused), _)) =
+          val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
             eval(
               UnusedDependencies.unusedCompileDependenciesAnon
             ).runtimeChecked
@@ -47,7 +47,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(UnusedDependencies, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UnusedReport(unused), _)) =
+          val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
             eval(
               UnusedDependencies.unusedCompileDependenciesAnon
             ).runtimeChecked
@@ -60,7 +60,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(UnusedDependencies, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UnusedReport(unused), _)) =
+          val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
             eval(
               UnusedDependencies.unusedCompileDependenciesAnon
             ).runtimeChecked
@@ -72,7 +72,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(UndeclaredDependencies, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UndeclaredReport(undeclared), _)) =
+          val Right(UnitTester.Result(UndeclaredReport(undeclared, _), _)) =
             eval(
               UndeclaredDependencies.undeclaredCompileDependenciesAnon
             ).runtimeChecked
@@ -84,7 +84,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(UndeclaredDependencies, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UndeclaredReport(undeclared), _)) =
+          val Right(UnitTester.Result(UndeclaredReport(undeclared, _), _)) =
             eval(
               UndeclaredDependencies.undeclaredCompileDependenciesAnon
             ).runtimeChecked
@@ -96,7 +96,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(NoDependencyIssues, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UnusedReport(unused), _)) =
+          val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
             eval(
               NoDependencyIssues.unusedCompileDependenciesAnon
             ).runtimeChecked
@@ -108,7 +108,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(NoDependencyIssues, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UndeclaredReport(undeclared), _)) =
+          val Right(UnitTester.Result(UndeclaredReport(undeclared, _), _)) =
             eval(
               NoDependencyIssues.undeclaredCompileDependenciesAnon
             ).runtimeChecked
@@ -122,7 +122,7 @@ object UnitTests extends TestSuite {
         FilteredUndeclaredDependencies,
         resourceFolder / "unit-test-project"
       ).scoped { eval =>
-        val Right(UnitTester.Result(UndeclaredReport(undeclared), _)) =
+        val Right(UnitTester.Result(UndeclaredReport(undeclared, _), _)) =
           eval(
             FilteredUndeclaredDependencies.undeclaredCompileDependenciesAnon
           ).runtimeChecked
@@ -136,7 +136,7 @@ object UnitTests extends TestSuite {
         FilteredUnusedDependencies,
         resourceFolder / "unit-test-project"
       ).scoped { eval =>
-        val Right(UnitTester.Result(UnusedReport(unused), _)) =
+        val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
           eval(
             FilteredUnusedDependencies.unusedCompileDependenciesAnon
           ).runtimeChecked
@@ -148,7 +148,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(ScalaJSProject, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UndeclaredReport(undeclared), _)) =
+          val Right(UnitTester.Result(UndeclaredReport(undeclared, _), _)) =
             eval(
               ScalaJSProject.undeclaredCompileDependenciesAnon
             ).runtimeChecked
@@ -161,7 +161,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(ScalaJSProject, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UndeclaredReport(undeclared), _)) =
+          val Right(UnitTester.Result(UndeclaredReport(undeclared, _), _)) =
             eval(
               ScalaJSProject.undeclaredCompileDependenciesAnon
             ).runtimeChecked
@@ -173,7 +173,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(ScalaJSProject, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UnusedReport(unused), _)) =
+          val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
             eval(
               ScalaJSProject.unusedCompileDependenciesAnon
             ).runtimeChecked
@@ -186,7 +186,7 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(ScalaNativeProject, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UndeclaredReport(undeclared), _)) =
+          val Right(UnitTester.Result(UndeclaredReport(undeclared, _), _)) =
             eval(
               ScalaNativeProject.undeclaredCompileDependenciesAnon
             ).runtimeChecked
@@ -198,13 +198,143 @@ object UnitTests extends TestSuite {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(ScalaNativeProject, resourceFolder / "unit-test-project")
         .scoped { eval =>
-          val Right(UnitTester.Result(UnusedReport(unused), _)) =
+          val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
             eval(
               ScalaNativeProject.unusedCompileDependenciesAnon
             ).runtimeChecked
           assert(!unused.exists(_.fullName.startsWith("cats-effect")))
           assert(unused.exists(_.fullName.startsWith("fs2-core")))
         }
+    }
+
+    test("modules - unused module dep is detected") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(UnusedModuleDeps, resourceFolder / "module-deps-unused")
+        .scoped { eval =>
+          val Right(UnitTester.Result(UnusedReport(_, unused), _)) =
+            eval(
+              UnusedModuleDeps.app.unusedCompileDependenciesAnon
+            ).runtimeChecked
+          assert(
+            unused.exists(d => d.contains("core"))
+          )
+        }
+    }
+
+    test("modules - undeclared transitive module dep is detected") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        UndeclaredModuleDeps,
+        resourceFolder / "module-deps-undeclared"
+      ).scoped { eval =>
+        val Right(UnitTester.Result(UndeclaredReport(_, undeclared), _)) =
+          eval(
+            UndeclaredModuleDeps.app.undeclaredCompileDependenciesAnon
+          ).runtimeChecked
+        // app uses core.CoreModel directly but only declares middle in moduleDeps
+        // TODO: Tighten assertion once plugin API for module deps is finalized
+        assert(
+          undeclared.exists(d => d.contains("core"))
+        )
+      }
+    }
+
+    test("modules - declared module dep is not undeclared") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        UndeclaredModuleDeps,
+        resourceFolder / "module-deps-undeclared"
+      ).scoped { eval =>
+        val Right(UnitTester.Result(UndeclaredReport(_, undeclared), _)) =
+          eval(
+            UndeclaredModuleDeps.app.undeclaredCompileDependenciesAnon
+          ).runtimeChecked
+        assert(!undeclared.exists(d => d.contains("middle")))
+      }
+    }
+
+    test("modules - no unused module deps in clean project") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(CleanModuleDeps, resourceFolder / "module-deps-clean")
+        .scoped { eval =>
+          val Right(UnitTester.Result(UnusedReport(_, unused), _)) =
+            eval(
+              CleanModuleDeps.app.unusedCompileDependenciesAnon
+            ).runtimeChecked
+          // app properly uses core, so core should not be reported as unused
+          assert(!unused.exists(d => d.contains("core")))
+        }
+    }
+
+    test("modules - no undeclared module deps in clean project") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(CleanModuleDeps, resourceFolder / "module-deps-clean")
+        .scoped { eval =>
+          val Right(UnitTester.Result(UndeclaredReport(_, undeclared), _)) =
+            eval(
+              CleanModuleDeps.app.undeclaredCompileDependenciesAnon
+            ).runtimeChecked
+          assert(undeclared.isEmpty)
+        }
+    }
+
+    test("modules - undeclared nested transitive module dep is detected") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        NestedUndeclaredModuleDeps,
+        resourceFolder / "module-deps-nested-undeclared"
+      ).scoped { eval =>
+        val Right(UnitTester.Result(UndeclaredReport(_, undeclared), _)) =
+          eval(
+            NestedUndeclaredModuleDeps.app.undeclaredCompileDependenciesAnon
+          ).runtimeChecked
+        // app uses core.CoreModel directly but only declares outer.middle in moduleDeps
+        assert(
+          undeclared.exists(d => d.contains("core"))
+        )
+      }
+    }
+
+    test("modules - declared nested module dep is not undeclared") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        NestedUndeclaredModuleDeps,
+        resourceFolder / "module-deps-nested-undeclared"
+      ).scoped { eval =>
+        val Right(UnitTester.Result(UndeclaredReport(_, undeclared), _)) =
+          eval(
+            NestedUndeclaredModuleDeps.app.undeclaredCompileDependenciesAnon
+          ).runtimeChecked
+        assert(!undeclared.exists(d => d.contains("middle")))
+      }
+    }
+
+    test("modules - undeclared module filter suppresses filtered module") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        FilteredUndeclaredModuleDeps,
+        resourceFolder / "module-deps-undeclared"
+      ).scoped { eval =>
+        val Right(UnitTester.Result(UndeclaredReport(_, undeclared), _)) =
+          eval(
+            FilteredUndeclaredModuleDeps.app.undeclaredCompileDependenciesAnon
+          ).runtimeChecked
+        assert(!undeclared.exists(d => d.contains("core")))
+      }
+    }
+
+    test("modules - unused module filter suppresses filtered module") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        FilteredUnusedModuleDeps,
+        resourceFolder / "module-deps-unused"
+      ).scoped { eval =>
+        val Right(UnitTester.Result(UnusedReport(_, unused), _)) =
+          eval(
+            FilteredUnusedModuleDeps.app.unusedCompileDependenciesAnon
+          ).runtimeChecked
+        assert(!unused.exists(d => d.contains("core")))
+      }
     }
 
   }

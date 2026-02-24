@@ -57,9 +57,15 @@ object Dependency {
 
 sealed trait Report
 
-final case class UnusedReport(dependencies: Set[Dependency]) extends Report
+final case class UnusedReport(
+    dependencies: Set[Dependency],
+    modules: Set[String]
+) extends Report
 
-final case class UndeclaredReport(dependencies: Set[Dependency]) extends Report
+final case class UndeclaredReport(
+    dependencies: Set[Dependency],
+    modules: Set[String]
+) extends Report
 
 object Report {
 
@@ -214,6 +220,10 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
 
   def unusedCompileDependenciesFilter: Seq[Dep] = Seq.empty
 
+  def undeclaredCompileModulesFilter: Seq[Module] = Seq.empty
+
+  def unusedCompileModulesFilter: Seq[Module] = Seq.empty
+
   private def dependencyFromMill(dep: Dep, sv: String) = {
     val resolved = Lib.depToDependency(dep, sv)
     val isCross = dep.cross.isBinary || dep.cross.isConstant
@@ -237,25 +247,74 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     deps.map { dependencyFromMill(_, sv) }.toSet
   }
 
-  private def usedDependencies(
-      analysis: os.Path,
-      sv: String
-  ): Set[Dependency] = {
+  private def readAnalysis(analysisFile: os.Path): Analysis = {
     val store = ConsistentFileAnalysisStore.binary(
-      analysis.toIO,
+      analysisFile.toIO,
       ReadWriteMappers.getEmptyMappers()
     )
     val analysisContents = store.get()
     if (analysisContents.isPresent) {
-      val analysis = analysisContents.get().getAnalysis.asInstanceOf[Analysis]
-      analysis.relations.allLibraryDeps
-        .map(d => os.Path(d.id()))
-        .map(_.toIO)
-        .flatMap(jarToDependency(_, sv))
-        .toSet
+      analysisContents.get().getAnalysis.asInstanceOf[Analysis]
     } else {
       throw new Exception("Zinc analysis not available")
     }
+  }
+
+  private def usedDependencies(
+      analysisFile: os.Path,
+      sv: String
+  ): Set[Dependency] = {
+    val analysis = readAnalysis(analysisFile)
+    analysis.relations.allLibraryDeps
+      .map(d => os.Path(d.id()))
+      .map(_.toIO)
+      .flatMap(jarToDependency(_, sv))
+      .toSet
+  }
+
+  private def usedModuleClasses(analysisFile: os.Path): Set[String] = {
+    val analysis = readAnalysis(analysisFile)
+    analysis.relations.allExternalDeps.toSet
+  }
+
+  private def moduleClasses(
+      moduleAnalyses: Seq[(String, os.Path)]
+  ): Map[String, Set[String]] = {
+    moduleAnalyses
+      .map { case (name, analysisFile) =>
+        val analysis = readAnalysis(analysisFile)
+        val classes = analysis.relations.productClassName._2s.toSet
+        name -> classes
+      }
+      .toMap[String, Set[String]]
+  }
+
+  private def undeclaredModules(
+      analysisFile: os.Path,
+      moduleAnalyses: Seq[(String, os.Path)]
+  ): Set[String] = {
+    val modules = moduleClasses(moduleAnalyses)
+    val usedClasses = usedModuleClasses(analysisFile)
+    val declaredModulesDeps = moduleDeps.map(_.moduleSegments.render).toSet
+
+    modules
+      .filter { case (_, moduleClasses) =>
+        usedClasses.intersect(moduleClasses).nonEmpty
+      }
+      .keySet
+      .filter(!declaredModulesDeps.contains(_))
+  }
+
+  private def unusedModules(
+      analysisFile: os.Path,
+      declaredModulesAnalyses: Seq[(String, os.Path)]
+  ): Set[String] = {
+    val modules = moduleClasses(declaredModulesAnalyses)
+    val usedClasses = usedModuleClasses(analysisFile)
+
+    modules.filter { case (_, moduleClasses) =>
+      usedClasses.intersect(moduleClasses).isEmpty
+    }.keySet
   }
 
   def undeclaredCompileDependenciesAnon = Task.Anon {
@@ -269,21 +328,44 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
           .map(dependencyFromMill(_, scalaVersion()))
           .contains(d)
       }
-    UndeclaredReport(undeclaredDeps)
+
+    val moduleCompiles =
+      Task.traverse(transitiveModuleRunModuleDeps)(_.compile)()
+    val moduleAnalyses =
+      transitiveModuleRunModuleDeps.zip(moduleCompiles).map {
+        case (mod, compileResult) =>
+          mod.moduleSegments.render -> compileResult.analysisFile
+      }
+
+    val undeclaredMods = undeclaredModules(analysis, moduleAnalyses)
+      .filter { m =>
+        !undeclaredCompileModulesFilter.exists(_.moduleSegments.render == m)
+      }
+
+    UndeclaredReport(undeclaredDeps, undeclaredMods)
   }
 
   def logUndeclared(log: Logger, report: UndeclaredReport) = {
-    if (report.dependencies.isEmpty) {
-      log.info(
+    import log._
+    if (report.dependencies.isEmpty && report.modules.isEmpty) {
+      info(
         "The project explicitly declares all the libraries that it directly depends on for compilation. Good job!"
       )
     } else {
-      log.warn(
-        "The project depends on the following libraries for compilation but they are not declared:"
-      )
-      report.dependencies.toSeq
-        .sortBy(d => (d.organization, d.fullName))
-        .foreach { d => log.warn(d.presentation) }
+      if (report.dependencies.nonEmpty) {
+        warn(
+          "The project depends on the following libraries for compilation but they are not declared:"
+        )
+        report.dependencies.toSeq
+          .sortBy(d => (d.organization, d.fullName))
+          .foreach { d => log.warn(d.presentation) }
+      }
+      if (report.modules.nonEmpty) {
+        warn(
+          "The project depends on the following modules for compilation but they are not declared:"
+        )
+        report.modules.toSeq.sorted.foreach { log.warn }
+      }
     }
   }
 
@@ -316,29 +398,51 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
 
   def unusedCompileDependenciesAnon = Task.Anon {
     val sv = scalaVersion()
+    val analysis = compile().analysisFile
+
     val declaredDeps = declared(mvnDeps(), sv)
-    val usedDeps = usedDependencies(compile().analysisFile, sv)
+    val usedDeps = usedDependencies(analysis, sv)
     val unusedDeps = (declaredDeps -- usedDeps)
       .filter { d =>
         !unusedCompileDependenciesFilter
           .map(dependencyFromMill(_, scalaVersion()))
           .contains(d)
       }
-    UnusedReport(unusedDeps)
+
+    val moduleCompiles = Task.traverse(moduleDeps)(_.compile)()
+    val moduleAnalyses =
+      moduleDeps.zip(moduleCompiles).map { case (mod, compileResult) =>
+        mod.moduleSegments.render -> compileResult.analysisFile
+      }
+    val unusedMods = unusedModules(analysis, moduleAnalyses)
+      .filter { m =>
+        !unusedCompileModulesFilter.exists(_.moduleSegments.render == m)
+      }
+
+    UnusedReport(unusedDeps, unusedMods)
   }
 
   def logUnused(log: Logger, report: UnusedReport) = {
-    if (report.dependencies.isEmpty) {
-      log.info(
+    import log._
+    if (report.dependencies.isEmpty && report.modules.isEmpty) {
+      info(
         "The project has no unused dependencies declared in libraryDependencies. Good job!"
       )
     } else {
-      log.warn(
-        "The following libraries are declared but are not needed for compilation:"
-      )
-      report.dependencies.toSeq
-        .sortBy(d => (d.organization, d.fullName))
-        .foreach { d => log.warn(d.presentation) }
+      if (report.dependencies.nonEmpty) {
+        warn(
+          "The following libraries are declared but are not needed for compilation:"
+        )
+        report.dependencies.toSeq
+          .sortBy(d => (d.organization, d.fullName))
+          .foreach { d => log.warn(d.presentation) }
+      }
+      if (report.modules.nonEmpty) {
+        warn(
+          "The following modules are declared but are not needed for compilation:"
+        )
+        report.modules.toSeq.sorted.foreach { log.warn }
+      }
     }
   }
 
