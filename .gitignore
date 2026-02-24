@@ -8,6 +8,6 @@ out/
 .idea
 
 # Nix
-*.nix
-flake.lock
+./*.nix
+./flake.lock
 

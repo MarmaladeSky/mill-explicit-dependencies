@@ -4,6 +4,18 @@
 
 This is a [Mill](https://github.com/com-lihaoyi/mill) Plugin similar to the most useful [SBT](https://github.com/sbt/sbt) [Plugin you ever saw](https://github.com/cb372/sbt-explicit-dependencies).
 
+## Compatibility
+
+The plugin was tested and verified for any combination of:
+
+| Scala   | Mill  |
+|---------|-------|
+| 2.13.18 | 1.0.5 |
+| 3.3.7   | 1.0.6 |
+| 3.8.2   | 1.1.0 |
+|         | 1.1.1 |
+|         | 1.1.2 |
+
 ## Usage
 
 Set up the plugin at your **build.mill**:
