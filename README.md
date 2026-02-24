@@ -7,9 +7,13 @@ This is a [Mill](https://github.com/com-lihaoyi/mill) Plugin similar to the most
 Set up the plugin at your **build.mill**:
 
 ```scala
+//| mill-version: 1.0.5
 //| mvnDeps: [
-//|   "digital.junkie::mill-explicit-dependencies:$MILL_VERSION"
+//|   "digital.junkie::mill-explicit-dependencies:1.0.0-SNAPSHOT"
 //| ]
+//| repositories:
+//|   - https://central.sonatype.com/repository/maven-snapshots
+
 object myproject extends ScalaModule with ExplicitDependencies {
 
   // [optional] filter out unwanted results
@@ -33,7 +37,3 @@ mill __.unusedCompileDependencies
 # fail if there are unused dependencies
 mill __.unusedCompileDependenciesTest
 ```
-
-## Versioning
-
-This plugin follows Mill's versioning, starting from 1.0.0 without skipping. The bugfixes are provided as X.Y.Z.1, X.Y.Z.2, etc.
