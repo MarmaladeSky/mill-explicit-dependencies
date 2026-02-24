@@ -9,7 +9,7 @@ Set up the plugin at your **build.mill**:
 ```scala
 //| mill-version: 1.0.5
 //| mvnDeps: [
-//|   "digital.junkie::mill-explicit-dependencies:1.0.0-SNAPSHOT"
+//|   "digital.junkie::mill-explicit-dependencies:1.0.0"
 //| ]
 //| repositories:
 //|   - https://central.sonatype.com/repository/maven-snapshots
