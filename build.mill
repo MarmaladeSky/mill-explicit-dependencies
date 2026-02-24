@@ -18,7 +18,7 @@ object `mill-explicit-dependencies`
 
   def millVersion = "1.0.5"
 
-  def publishVersion = "1.0.0"
+  def publishVersion = "1.0.1-SNAPSHOT"
 
   // versions are aligned with ones used by mill of the given version
   def scalaVersion = "3.7.1"
