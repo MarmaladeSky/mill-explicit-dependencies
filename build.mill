@@ -66,7 +66,7 @@ object `mill-explicit-dependencies`
     description = "Explicit Dependencies Mill Plugin",
     organization = "digital.junkie",
     url = "https://github.com/MarmaladeSky/mill-explicit-dependencies",
-    licenses = Seq(License.MIT),
+    licenses = Seq(License.`Apache-2.0`),
     versionControl =
       VersionControl.github("MarmaladeSky", "mill-explicit-dependencies"),
     developers = Seq(
