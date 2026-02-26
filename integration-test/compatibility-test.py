@@ -105,14 +105,14 @@ def main():
             clean_integration_project()
 
             # unusedCompileDependencies — should detect fs2-core
-            res = run_plugin_task("app.unusedCompileDependenciesTest")
+            res = run_plugin_task("__.unusedCompileDependenciesTest")
             ok, msg = check_unused(res)
             status = "PASS" if ok else "FAIL"
             print(f"  unusedCompileDependencies: {status} — {msg}")
             results.append((mill_ver, scala_ver, "unused", ok, msg))
 
             # undeclaredCompileDependencies — should find nothing undeclared
-            res = run_plugin_task("app.undeclaredCompileDependenciesTest")
+            res = run_plugin_task("__.undeclaredCompileDependenciesTest")
             ok, msg = check_undeclared(res)
             status = "PASS" if ok else "FAIL"
             print(f"  undeclaredCompileDependencies: {status} — {msg}")
