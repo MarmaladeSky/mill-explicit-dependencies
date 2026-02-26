@@ -79,26 +79,26 @@ object Report {
 
 trait ExplicitDependencies extends mill.scalalib.ScalaModule {
 
+  private val MinSupportVersion = "1.0.5"
+
   private def checkMillVersion(): Option[String] = {
-    val pluginVersion =
-      digital.junkie.milledependencies.BuildInfo.version.split("\\.|-")
-    val runtimeVersion = mill.api.BuildInfo.millVersion.split("\\.|-")
-    val expectedMillVersion = pluginVersion.take(3)
-    val versionMatch = runtimeVersion
-      .zip(pluginVersion)
-      .takeWhile(_ == _)
-      .length
+    val runtimeVersion = mill.api.BuildInfo.millVersion.split("\\.|-").toSeq
+    val minVersion = MinSupportVersion.split("\\.|-").toSeq
 
-    val invalidMatch = pluginVersion.length >= 3 &&
-      runtimeVersion.length >= 3 &&
-      versionMatch < 3
+    val versionsCompare = runtimeVersion
+      .zip(minVersion)
+      .foldLeft(0) { case (c, (a, b)) =>
+        if (c != 0) {
+          c
+        } else {
+          a.compare(b)
+        }
+      }
 
-    Option.when(invalidMatch) {
-      s"mill-explicit-dependencies was compiled for Mill ${expectedMillVersion.mkString(".")} " +
-        s"but running on Mill ${runtimeVersion.mkString(".")}. " +
-        s"This may cause binary incompatibility in transitive dependencies. " +
-        s"Consider using ${runtimeVersion.take(3).mkString(".")} version of plugin. " +
-        "You can also declare plugin as 'digital.junkie::mill-explicit-dependencies:$MILL_VERSION'."
+    Option.when(versionsCompare < 0) {
+      s"mill-explicit-dependencies was designed and tested for Mill equals or older than $MinSupportVersion " +
+        s"but running on Mill ${runtimeVersion.mkString(".")}. This is not going to work." +
+        s"Consider upgrading Mill or downgrading the plugin."
     }
   }
 
