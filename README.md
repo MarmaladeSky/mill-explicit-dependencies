@@ -1,6 +1,6 @@
 # Mill Explicit Dependencies
 
-[![Latest version](https://img.shields.io/badge/mill_explicit_dependencies-1.0.0-green?logo=scala&logoColor=red&label=Maven)](https://central.sonatype.com/artifact/digital.junkie/mill-explicit-dependencies_3/1.0.0)
+[![Latest version](https://img.shields.io/badge/mill_explicit_dependencies-1.0.1-green?logo=scala&logoColor=red&label=Maven)](https://central.sonatype.com/artifact/digital.junkie/mill-explicit-dependencies_3/1.0.1)
 
 This is a [Mill](https://github.com/com-lihaoyi/mill) Plugin similar to the most useful [SBT](https://github.com/sbt/sbt) [Plugin you ever saw](https://github.com/cb372/sbt-explicit-dependencies).
 
@@ -23,7 +23,7 @@ Set up the plugin at your **build.mill**:
 ```scala
 //| mill-version: 1.0.5
 //| mvnDeps: [
-//|   "digital.junkie::mill-explicit-dependencies:1.0.0"
+//|   "digital.junkie::mill-explicit-dependencies:1.0.1"
 //| ]
 
 object myproject extends ScalaModule with ExplicitDependencies {
