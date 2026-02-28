@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Matrix compatibility test for mill-explicit-dependencies plugin.
+"""Scala version compatibility test for mill-explicit-dependencies plugin.
 
 Publishes the plugin locally, then runs a sample integration project
-against every (Mill version, Scala version) combination to verify
-the plugin works correctly.
+against every Scala version to verify the plugin works correctly.
 """
 
 import re
@@ -12,14 +11,12 @@ import sys
 from pathlib import Path
 
 # ── Matrix configuration ─────────────────────────────────────────────
-MILL_VERSIONS = ["1.0.5", "1.0.6", "1.1.0", "1.1.1", "1.1.2"]
 SCALA_VERSIONS = ["2.13.18", "3.3.7", "3.8.2"]
 
 # ── Paths ─────────────────────────────────────────────────────────────
 REPO_ROOT = Path(__file__).resolve().parent / ".."
 INTEGRATION_DIR = REPO_ROOT / "./integration-test"
 BUILD_FILE = INTEGRATION_DIR / "build.mill"
-MILL_VERSION_FILE = INTEGRATION_DIR / ".mill-version"
 
 
 def run(args: list[str], cwd: Path, check: bool = True, **kwargs):
@@ -38,11 +35,6 @@ def publish_plugin_locally():
     print()
 
 
-def set_mill_version(version: str):
-    """Write .mill-version in the integration test project."""
-    MILL_VERSION_FILE.write_text(version + "\n")
-
-
 def set_scala_version(version: str):
     """Rewrite scalaVersion in the integration test build.mill."""
     content = BUILD_FILE.read_text()
@@ -55,7 +47,7 @@ def set_scala_version(version: str):
 
 
 def clean_integration_project():
-    """Remove cached Mill output so each combination starts fresh."""
+    """Remove cached Mill output so each run starts fresh."""
     out_dir = INTEGRATION_DIR / "out"
     if out_dir.exists():
         run(["rm", "-rf", str(out_dir)], cwd=INTEGRATION_DIR)
@@ -93,48 +85,45 @@ def check_undeclared(result: subprocess.CompletedProcess) -> tuple[bool, str]:
 def main():
     publish_plugin_locally()
 
-    results: list[tuple[str, str, str, bool, str]] = []
+    results: list[tuple[str, str, bool, str]] = []
 
-    for mill_ver in MILL_VERSIONS:
-        for scala_ver in SCALA_VERSIONS:
-            header = f"Mill {mill_ver} + Scala {scala_ver}"
-            print(f"--- {header} ---")
+    for scala_ver in SCALA_VERSIONS:
+        print(f"--- Scala {scala_ver} ---")
 
-            set_mill_version(mill_ver)
-            set_scala_version(scala_ver)
-            clean_integration_project()
+        set_scala_version(scala_ver)
+        clean_integration_project()
 
-            # unusedCompileDependencies — should detect fs2-core
-            res = run_plugin_task("__.unusedCompileDependenciesTest")
-            ok, msg = check_unused(res)
-            status = "PASS" if ok else "FAIL"
-            print(f"  unusedCompileDependencies: {status} — {msg}")
-            results.append((mill_ver, scala_ver, "unused", ok, msg))
+        # unusedCompileDependencies — should detect fs2-core
+        res = run_plugin_task("__.unusedCompileDependenciesTest")
+        ok, msg = check_unused(res)
+        status = "PASS" if ok else "FAIL"
+        print(f"  unusedCompileDependencies: {status} — {msg}")
+        results.append((scala_ver, "unused", ok, msg))
 
-            # undeclaredCompileDependencies — should find nothing undeclared
-            res = run_plugin_task("__.undeclaredCompileDependenciesTest")
-            ok, msg = check_undeclared(res)
-            status = "PASS" if ok else "FAIL"
-            print(f"  undeclaredCompileDependencies: {status} — {msg}")
-            results.append((mill_ver, scala_ver, "undeclared", ok, msg))
+        # undeclaredCompileDependencies — should find nothing undeclared
+        res = run_plugin_task("__.undeclaredCompileDependenciesTest")
+        ok, msg = check_undeclared(res)
+        status = "PASS" if ok else "FAIL"
+        print(f"  undeclaredCompileDependencies: {status} — {msg}")
+        results.append((scala_ver, "undeclared", ok, msg))
 
-            print()
+        print()
 
     # ── Summary ───────────────────────────────────────────────────────
-    print("=== Matrix Results ===")
+    print("=== Results ===")
     all_passed = True
-    for mill_ver, scala_ver, check, ok, _ in results:
+    for scala_ver, check, ok, _ in results:
         status = "PASS" if ok else "FAIL"
         if not ok:
             all_passed = False
-        print(f"  Mill {mill_ver} + Scala {scala_ver:>8} | {check:>10}: {status}")
+        print(f"  Scala {scala_ver:>8} | {check:>10}: {status}")
 
     print()
     if all_passed:
-        print("All combinations passed!")
+        print("All versions passed!")
         return 0
     else:
-        print("Some combinations failed!")
+        print("Some versions failed!")
         return 1
 
 
