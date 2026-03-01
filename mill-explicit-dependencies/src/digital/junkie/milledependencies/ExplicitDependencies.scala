@@ -81,8 +81,8 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
 
   private def checkMillVersion(): Option[String] = {
     val pluginVersion =
-      digital.junkie.milledependencies.BuildInfo.version.split("\\.|-")
-    val runtimeVersion = mill.api.BuildInfo.millVersion.split("\\.|-")
+      digital.junkie.milledependencies.BuildInfo.version.split("[-.]")
+    val runtimeVersion = mill.api.BuildInfo.millVersion.split("[-.]")
     val expectedMillVersion = pluginVersion.take(3)
     val versionMatch = runtimeVersion
       .zip(pluginVersion)
