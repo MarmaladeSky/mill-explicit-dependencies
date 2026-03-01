@@ -232,10 +232,7 @@ object UnitTests extends TestSuite {
             UndeclaredModuleDeps.app.undeclaredCompileDependenciesAnon
           ).runtimeChecked
         // app uses core.CoreModel directly but only declares middle in moduleDeps
-        // TODO: Tighten assertion once plugin API for module deps is finalized
-        assert(
-          undeclared.exists(d => d.contains("core"))
-        )
+        assert(undeclared.contains("core"))
       }
     }
 
