@@ -72,6 +72,8 @@ def set_scala_version(version: str):
 
 def clean_integration_project():
     """Remove cached Mill output so each run starts fresh."""
+    # Shut down the Mill daemon first so it releases the out/mill-daemon directory.
+    run(["./mill", "shutdown"], cwd=INTEGRATION_DIR, check=False)
     out_dir = INTEGRATION_DIR / "out"
     if out_dir.exists():
         run(["rm", "-rf", str(out_dir)], cwd=INTEGRATION_DIR)
