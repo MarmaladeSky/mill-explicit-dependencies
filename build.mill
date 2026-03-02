@@ -20,9 +20,9 @@ object `mill-explicit-dependencies`
 
   def publishVersion = "1.0.6-SNAPSHOT"
   // versions are aligned with ones used by mill of the given version
-  def scalaVersion = "3.7.1"
-  def zincVersion = "1.10.8"
-  def upickleVersion = "4.2.1"
+  def scalaVersion = "3.7.3"
+  def zincVersion = "1.11.0"
+  def upickleVersion = "4.3.0"
 
   def scalacOptions = {
     super.scalacOptions() ++ ScalacOptions.tokensForVersion(
