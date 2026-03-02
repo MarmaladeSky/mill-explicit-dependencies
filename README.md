@@ -58,7 +58,7 @@ Plugin's bugfixes are delivered as x.y.z.λ.
 | FAIL        | 2.12.0  |
 | PASS        | 2.12.1  |
 | PASS        | 2.12.2  |
-| FAIL        | 2.12.3  |
+| PASS        | 2.12.3  |
 | FAIL        | 2.12.4  |
 | PASS        | 2.12.5  |
 | PASS        | 2.12.6  |
