@@ -79,7 +79,7 @@ object Report {
 
 trait ExplicitDependencies extends mill.scalalib.ScalaModule {
 
-  private def checkMillVersion(): Option[String] = {
+  private def versionCompatibilityWarning: Option[String] = {
     val pluginVersion =
       digital.junkie.milledependencies.BuildInfo.version.split("[-.]")
     val runtimeVersion = mill.api.BuildInfo.millVersion.split("[-.]")
@@ -250,7 +250,7 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
   private def readAnalysis(analysisFile: os.Path): Analysis = {
     val store = ConsistentFileAnalysisStore.binary(
       analysisFile.toIO,
-      ReadWriteMappers.getEmptyMappers()
+      ReadWriteMappers.getEmptyMappers
     )
     val analysisContents = store.get()
     if (analysisContents.isPresent) {
@@ -305,19 +305,7 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
       .filter(!declaredModulesDeps.contains(_))
   }
 
-  private def unusedModules(
-      analysisFile: os.Path,
-      declaredModulesAnalyses: Seq[(String, os.Path)]
-  ): Set[String] = {
-    val modules = moduleClasses(declaredModulesAnalyses)
-    val usedClasses = usedModuleClasses(analysisFile)
-
-    modules.filter { case (_, moduleClasses) =>
-      usedClasses.intersect(moduleClasses).isEmpty
-    }.keySet
-  }
-
-  def undeclaredCompileDependenciesAnon = Task.Anon {
+  def undeclaredCompileDependenciesAnon: Task[UndeclaredReport] = Task.Anon {
     val analysis = compile().analysisFile
     val declaredDeps = declared(mvnDeps(), scalaVersion())
     val usedDeps = usedDependencies(analysis, scalaVersion())
@@ -345,7 +333,7 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     UndeclaredReport(undeclaredDeps, undeclaredMods)
   }
 
-  def logUndeclared(log: Logger, report: UndeclaredReport) = {
+  private def logUndeclared(log: Logger, report: UndeclaredReport): Unit = {
     import log._
     if (report.dependencies.isEmpty && report.modules.isEmpty) {
       info(
@@ -369,21 +357,19 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     }
   }
 
-  def undeclaredCompileDependencies() = Task.Command {
+  def undeclaredCompileDependencies(): Task.Command[Unit] = Task.Command {
     val log = Task.ctx().log
 
-    val warning = checkMillVersion()
-    warning.foreach(log.warn)
+    versionCompatibilityWarning.foreach(log.warn)
 
     val report = undeclaredCompileDependenciesAnon()
     logUndeclared(log, report)
   }
 
-  def undeclaredCompileDependenciesTest = Task {
+  def undeclaredCompileDependenciesTest: Task.Simple[UndeclaredReport] = Task {
     val log = Task.ctx().log
 
-    val warning = checkMillVersion()
-    warning.foreach(log.warn)
+    versionCompatibilityWarning.foreach(log.warn)
 
     val report = undeclaredCompileDependenciesAnon()
     logUndeclared(log, report)
@@ -396,7 +382,19 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     }
   }
 
-  def unusedCompileDependenciesAnon = Task.Anon {
+  private def unusedModules(
+      analysisFile: os.Path,
+      declaredModulesAnalyses: Seq[(String, os.Path)]
+  ): Set[String] = {
+    val modules = moduleClasses(declaredModulesAnalyses)
+    val usedClasses = usedModuleClasses(analysisFile)
+
+    modules.filter { case (_, moduleClasses) =>
+      usedClasses.intersect(moduleClasses).isEmpty
+    }.keySet
+  }
+
+  def unusedCompileDependenciesAnon: Task[UnusedReport] = Task.Anon {
     val sv = scalaVersion()
     val analysis = compile().analysisFile
 
@@ -422,7 +420,7 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     UnusedReport(unusedDeps, unusedMods)
   }
 
-  def logUnused(log: Logger, report: UnusedReport) = {
+  private def logUnused(log: Logger, report: UnusedReport): Unit = {
     import log._
     if (report.dependencies.isEmpty && report.modules.isEmpty) {
       info(
@@ -446,21 +444,19 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     }
   }
 
-  def unusedCompileDependencies() = Task.Command {
+  def unusedCompileDependencies(): Task.Command[Unit] = Task.Command {
     val log = Task.ctx().log
 
-    val warning = checkMillVersion()
-    warning.foreach(log.warn)
+    versionCompatibilityWarning.foreach(log.warn)
 
     val report = unusedCompileDependenciesAnon()
     logUnused(log, report)
   }
 
-  def unusedCompileDependenciesTest = Task {
+  def unusedCompileDependenciesTest: Task.Simple[UnusedReport] = Task {
     val log = Task.ctx().log
 
-    val warning = checkMillVersion()
-    warning.foreach(log.warn)
+    versionCompatibilityWarning.foreach(log.warn)
 
     val report = unusedCompileDependenciesAnon()
     logUnused(log, report)
