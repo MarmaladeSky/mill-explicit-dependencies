@@ -20,9 +20,9 @@ object `mill-explicit-dependencies`
 
   def publishVersion = "1.1.0-SNAPSHOT"
   // versions are aligned with ones used by mill of the given version
-  def scalaVersion = "3.7.3"
-  def zincVersion = "1.11.0"
-  def upickleVersion = "4.3.0"
+  def scalaVersion = "3.8.1"
+  def zincVersion = "2.0.0-M13"
+  def upickleVersion = "4.4.2"
 
   def scalacOptions = {
     super.scalacOptions() ++ ScalacOptions.tokensForVersion(
@@ -38,7 +38,7 @@ object `mill-explicit-dependencies`
   )
 
   def mvnDeps = Seq(
-    mvn"org.scala-sbt:zinc-persist_2.13:$zincVersion"
+    mvn"org.scala-sbt::zinc-persist:$zincVersion"
   )
 
   def buildInfoPackageName = "digital.junkie.milledependencies"
