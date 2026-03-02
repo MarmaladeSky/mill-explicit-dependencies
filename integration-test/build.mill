@@ -1,6 +1,6 @@
 //| mill-version: 1.0.6
 //| mvnDeps:
-//|   - "digital.junkie::mill-explicit-dependencies:1.0.6-SNAPSHOT"
+//|   - "digital.junkie::mill-explicit-dependencies:1.0.6"
 
 package build
 import mill.*, scalalib.*
