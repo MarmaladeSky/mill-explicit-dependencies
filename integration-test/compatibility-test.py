@@ -8,6 +8,7 @@ against every Scala version to verify the plugin works correctly.
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 # ── Matrix configuration ─────────────────────────────────────────────
@@ -76,7 +77,12 @@ def clean_integration_project():
     run(["./mill", "shutdown"], cwd=INTEGRATION_DIR, check=False)
     out_dir = INTEGRATION_DIR / "out"
     if out_dir.exists():
-        run(["rm", "-rf", str(out_dir)], cwd=INTEGRATION_DIR)
+        try:
+            run(["rm", "-rf", str(out_dir)], cwd=INTEGRATION_DIR)
+        except subprocess.CalledProcessError:
+            print("  rm -rf failed, retrying in 3 seconds...")
+            time.sleep(3)
+            run(["rm", "-rf", str(out_dir)], cwd=INTEGRATION_DIR)
 
 
 def run_plugin_task(task: str) -> subprocess.CompletedProcess:
