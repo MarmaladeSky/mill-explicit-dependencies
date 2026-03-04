@@ -27,6 +27,7 @@ import mill.api.daemon.Logger
 final case class Dependency(
     organization: String,
     fullName: String,
+    classifier: Option[String],
     version: String,
     presentation: String
 ) {
@@ -36,14 +37,15 @@ final case class Dependency(
       case o: Dependency =>
         o.organization == organization &&
         o.fullName == fullName &&
-        o.version == version
+        o.version == version &&
+        o.classifier == classifier
       case _ =>
         false
     }
   }
 
   override def hashCode(): Int = {
-    (organization, fullName, version).hashCode()
+    (organization, fullName, classifier, version).hashCode()
   }
 
 }
@@ -110,6 +112,7 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
   private def makeDependency(
       organization: String,
       name: String,
+      classifier: Option[String],
       version: String,
       sv: String
   ): Dependency = {
@@ -119,15 +122,21 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
       Dependency(
         organization,
         name,
+        classifier,
         version,
-        s"$organization::$baseName:$version"
+        s"$organization::$baseName:$version" + classifier
+          .map(c => s";classifier=$c")
+          .getOrElse("")
       )
     } else {
       Dependency(
         organization,
         name,
+        classifier,
         version,
-        s"$organization:$name:$version"
+        s"$organization:$name:$version" + classifier
+          .map(c => s";classifier=$c")
+          .getOrElse("")
       )
     }
   }
@@ -165,48 +174,103 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     Some(new File(ivysDirectory, "ivy.xml")).filter(_.exists)
   }
 
-  private def parsePomFile(file: File, sv: String): Option[Dependency] = {
+  private def parsePomFile(
+      pomFile: File,
+      jarFile: File,
+      sv: String
+  ): Option[Dependency] = {
     try {
-      val xml = XML.loadFile(file)
+      val xml = XML.loadFile(pomFile)
+
+      val artifactId = (xml \ "artifactId").text
+
       val organization = {
         val groupId = (xml \ "groupId").text
         if (groupId.nonEmpty) groupId else (xml \ "parent" \ "groupId").text
       }
 
-      val rawName = (xml \ "artifactId").text
-
       // We use the parent dir to get the version because it's sometimes not present in the pom file
-      val version = file.getParentFile.getName
+      val version = pomFile.getParentFile.getName
 
-      Some(makeDependency(organization, rawName, version, sv))
+      val jarName = jarFile.getName()
+      val classifierPrefix = version + "-"
+      val classifierPrefixIndex = jarName.lastIndexOf(classifierPrefix)
+      val classifier = Option
+        .when(classifierPrefixIndex > 0) {
+          jarName
+            .substring(classifierPrefixIndex + classifierPrefix.size)
+            .stripSuffix(".jar")
+        }
+        .filter(_.nonEmpty)
+
+      Some(makeDependency(organization, artifactId, classifier, version, sv))
     } catch { case _: Exception => None }
   }
 
   private def parseIvyFile(
       file: File,
+      jarFile: File,
       scalaVersion: String
-  ): Option[Dependency] = {
+  ): Seq[Dependency] = {
     try {
       val xml = XML.loadFile(file)
       val organization = xml \ "info" \@ "organisation"
-      val rawName = xml \ "info" \@ "module"
+      val artifactId = xml \ "info" \@ "module"
       val version = xml \ "info" \@ "revision"
+      val artifacts = xml \ "publications" \\ "artifact"
 
-      Some(makeDependency(organization, rawName, version, scalaVersion))
-    } catch { case _: Exception => None }
+      artifacts.flatMap { a =>
+        val extenstion = (a \@ "ext")
+        val dType = (a \@ "type")
+        val name = (a \@ "name")
+        val classifier = a
+          .attribute("http://ant.apache.org/ivy/extra", "classifier")
+          .flatMap(_.headOption.map(_.text))
+          .filter(_.nonEmpty)
+
+        val expectedFileName = (
+          Seq(name) ++
+            classifier.map("-" + _) ++
+            Seq(".", extenstion)
+        ).mkString
+
+        if (dType == "jar" && jarFile.getName() == expectedFileName) {
+          Some {
+            makeDependency(
+              organization,
+              artifactId,
+              classifier,
+              version,
+              scalaVersion
+            )
+          }
+        } else {
+          None
+        }
+
+      }
+    } catch { case _: Exception => Seq.empty }
   }
 
   private def jarToDependency(
-      file: File,
+      jarFile: File,
       scalaVersion: String
-  ): Option[Dependency] = {
-    if (file.getAbsolutePath.endsWith(".jar")) {
-      findIvyFileInIvyCache(file)
-        .orElse { findIvyFileInIvyLocal(file) }
-        .flatMap { parseIvyFile(_, scalaVersion) }
-        .orElse { findPomFile(file).flatMap(parsePomFile(_, scalaVersion)) }
+  ): Seq[Dependency] = {
+    if (jarFile.getAbsolutePath.endsWith(".jar")) {
+      val fromIvy = findIvyFileInIvyCache(jarFile)
+        .orElse { findIvyFileInIvyLocal(jarFile) }
+        .map { parseIvyFile(_, jarFile, scalaVersion) }
+        .getOrElse(Seq.empty)
+
+      if (fromIvy.nonEmpty) {
+        fromIvy
+      } else {
+        findPomFile(jarFile)
+          .flatMap(parsePomFile(_, jarFile, scalaVersion))
+          .toSeq
+      }
     } else {
-      None
+      Seq.empty
     }
   }
 
@@ -230,15 +294,22 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     val org = dep.organization
     val name = dep.name
     val version = dep.version
+    val classifier = Option(
+      resolved.publication.classifier.value
+    ).filter(_.nonEmpty)
+    val classifierPrefix = classifier
+      .map(c => s";classifier=$c")
+      .getOrElse("")
 
     Dependency(
       resolved.module.organization.value,
       resolved.module.name.value,
+      classifier,
       resolved.versionConstraint.asString,
       if (isCross) {
-        s"$org::$name:$version"
+        s"$org::$name:$version" + classifierPrefix
       } else {
-        s"$org:$name:$version"
+        s"$org:$name:$version" + classifierPrefix
       }
     )
   }

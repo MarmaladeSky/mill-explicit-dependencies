@@ -334,5 +334,63 @@ object UnitTests extends TestSuite {
       }
     }
 
+    test(
+      "classifier dep (tests jar used at compile time) should not be detected as unused"
+    ) {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        NettyTransportTestsDependencies,
+        resourceFolder / "unit-test-project-netty-transport-tests"
+      ).scoped { eval =>
+        val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
+          eval(
+            NettyTransportTestsDependencies.unusedCompileDependenciesAnon
+          ).runtimeChecked
+        assert(
+          !unused.exists(d =>
+            d.fullName == "netty-transport" && d.classifier == Some("tests")
+          )
+        )
+      }
+    }
+
+    test(
+      "ivy classifier dep (tests jar used at compile time) should not be detected as unused"
+    ) {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        IvyClassifierDependencies,
+        resourceFolder / "unit-test-project-ivy-classifier"
+      ).scoped { eval =>
+        val publishResult = eval(IvyClassifierDependencies.lib.publishLocal())
+        assert(publishResult.isRight)
+        val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
+          eval(
+            IvyClassifierDependencies.app.unusedCompileDependenciesAnon
+          ).runtimeChecked
+        assert(!unused.exists(d => d.classifier == Some("tests")))
+      }
+    }
+
+    test("classifier dep (JNI-only native jar) should be detected as unused") {
+      // the project has 3 dependencies:
+      // netty-transport-native-epoll with Java classes
+      // netty-transport-native-epoll with classifier=linux-x86_64
+      // netty-transport-native-epoll with classifier=linux-aarch_64
+      // we expect to get the second and the third one as an unused because
+      // they should be declared as runtime dependencies
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(
+        ClassifierDependencies,
+        resourceFolder / "unit-test-project-netty-classifiers"
+      ).scoped { eval =>
+        val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
+          eval(
+            ClassifierDependencies.unusedCompileDependenciesAnon
+          ).runtimeChecked
+        assert(unused.count(_.fullName == "netty-transport-native-epoll") == 2)
+      }
+    }
+
   }
 }
