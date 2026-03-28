@@ -23,6 +23,7 @@ Set up the plugin at your **build.mill**:
 //| mvnDeps: [
 //|   "digital.junkie::mill-explicit-dependencies:$MILL_VERSION"
 //| ]
+import digital.junkie.milledependencies.ExplicitDependencies
 
 object myproject extends ScalaModule with ExplicitDependencies {
 
