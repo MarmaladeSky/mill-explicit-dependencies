@@ -16,7 +16,7 @@ object `mill-explicit-dependencies`
 
   def artifactName = "mill-explicit-dependencies"
 
-  def millVersion = "1.1.4"
+  def millVersion = "1.1.5"
 
   def publishVersion = "1.1.4.1-SNAPSHOT"
   // versions are aligned with ones used by mill of the given version
