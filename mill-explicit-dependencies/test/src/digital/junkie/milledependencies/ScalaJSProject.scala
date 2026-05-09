@@ -28,6 +28,6 @@ object ScalaJSProject
 
   lazy val millDiscover = Discover[this.type]
 
-  override def mvnDeps = Seq(Dep.parse("co.fs2::fs2-core:3.12.2"))
+  override def mvnDeps = Seq(Dep.parse("co.fs2::fs2-core::3.12.2"))
 
 }

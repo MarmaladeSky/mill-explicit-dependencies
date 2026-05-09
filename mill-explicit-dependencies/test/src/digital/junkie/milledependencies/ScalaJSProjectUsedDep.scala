@@ -10,23 +10,24 @@
 
 package digital.junkie.milledependencies
 
-import mill.testkit.TestRootModule
-import mill.api.Discover
-import mill.*
-import mill.javalib.Dep
-import mill.scalanativelib.ScalaNativeModule
 import digital.junkie.milledependencies.ExplicitDependencies
+import mill.*
+import mill.api.Discover
+import mill.javalib.Dep
+import mill.scalajslib.ScalaJSModule
+import mill.testkit.TestRootModule
 
-object ScalaNativeProject
+object ScalaJSProjectUsedDep
     extends TestRootModule
-    with ScalaNativeModule
+    with ScalaJSModule
     with ExplicitDependencies {
 
-  def scalaVersion = "3.7.3"
+  def scalaVersion = "3.8.3"
 
-  def scalaNativeVersion = "0.5.10"
+  def scalaJSVersion = "1.20.2"
 
   lazy val millDiscover = Discover[this.type]
 
-  override def mvnDeps = Seq(Dep.parse("co.fs2::fs2-core::3.13.0"))
+  override def mvnDeps = Seq(Dep.parse("org.typelevel::cats-effect::3.6.3"))
+
 }

@@ -182,6 +182,18 @@ object UnitTests extends TestSuite {
         }
     }
 
+    test("scalajs is not reporting valid used dependency") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(ScalaJSProjectUsedDep, resourceFolder / "unit-test-project")
+        .scoped { eval =>
+          val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
+            eval(
+              ScalaJSProjectUsedDep.unusedCompileDependenciesAnon
+            ).runtimeChecked
+          assert(!unused.exists(_.fullName.startsWith("cats-effect")))
+        }
+    }
+
     test("scalanative undeclared dependency is detected") {
       val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
       UnitTester(ScalaNativeProject, resourceFolder / "unit-test-project")
@@ -204,6 +216,18 @@ object UnitTests extends TestSuite {
             ).runtimeChecked
           assert(!unused.exists(_.fullName.startsWith("cats-effect")))
           assert(unused.exists(_.fullName.startsWith("fs2-core")))
+        }
+    }
+
+    test("scalanative is not reporting valid used dependency") {
+      val resourceFolder = os.Path(sys.env("MILL_TEST_RESOURCE_DIR"))
+      UnitTester(ScalaNativeProjectUsedDep, resourceFolder / "unit-test-project")
+        .scoped { eval =>
+          val Right(UnitTester.Result(UnusedReport(unused, _), _)) =
+            eval(
+              ScalaNativeProjectUsedDep.unusedCompileDependenciesAnon
+            ).runtimeChecked
+          assert(!unused.exists(_.fullName.startsWith("cats-effect")))
         }
     }
 

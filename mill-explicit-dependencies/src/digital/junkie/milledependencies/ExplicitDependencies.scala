@@ -288,8 +288,8 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
 
   def unusedCompileModulesFilter: Seq[Module] = Seq.empty
 
-  private def dependencyFromMill(dep: Dep, sv: String) = {
-    val resolved = Lib.depToDependency(dep, sv)
+  private def dependencyFromMill(dep: Dep, sv: String, ps: String) = {
+    val resolved = Lib.depToDependency(dep, sv, ps)
     val isCross = dep.cross.isBinary || dep.cross.isConstant
     val org = dep.organization
     val name = dep.name
@@ -314,8 +314,12 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
     )
   }
 
-  private def declared(deps: Seq[Dep], sv: String): Set[Dependency] = {
-    deps.map { dependencyFromMill(_, sv) }.toSet
+  private def declared(
+      deps: Seq[Dep],
+      sv: String,
+      ps: String
+  ): Set[Dependency] = {
+    deps.map { dependencyFromMill(_, sv, ps) }.toSet
   }
 
   private def readAnalysis(analysisFile: os.Path): Analysis = {
@@ -378,13 +382,15 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
 
   def undeclaredCompileDependenciesAnon: Task[UndeclaredReport] = Task.Anon {
     val analysis = compile().analysisFile
-    val declaredDeps = declared(mvnDeps(), scalaVersion())
-    val usedDeps = usedDependencies(analysis, scalaVersion())
+    val sv = scalaVersion()
+    val ps = platformSuffix()
+    val declaredDeps = declared(mvnDeps(), sv, ps)
+    val usedDeps = usedDependencies(analysis, sv)
     val undeclaredDeps = (usedDeps -- declaredDeps)
       .filter { d => !implicitModules.exists(m => d.fullName.startsWith(m)) }
       .filter { d =>
         !undeclaredCompileDependenciesFilter
-          .map(dependencyFromMill(_, scalaVersion()))
+          .map(dependencyFromMill(_, sv, ps))
           .contains(d)
       }
 
@@ -467,14 +473,15 @@ trait ExplicitDependencies extends mill.scalalib.ScalaModule {
 
   def unusedCompileDependenciesAnon: Task[UnusedReport] = Task.Anon {
     val sv = scalaVersion()
+    val ps = platformSuffix()
     val analysis = compile().analysisFile
 
-    val declaredDeps = declared(mvnDeps(), sv)
+    val declaredDeps = declared(mvnDeps(), sv, ps)
     val usedDeps = usedDependencies(analysis, sv)
     val unusedDeps = (declaredDeps -- usedDeps)
       .filter { d =>
         !unusedCompileDependenciesFilter
-          .map(dependencyFromMill(_, scalaVersion()))
+          .map(dependencyFromMill(_, sv, ps))
           .contains(d)
       }
 
