@@ -11,8 +11,9 @@ The plugin is available since Mill 1.0.5 and tested against Scala Versions
 | Scala   | 
 |---------|
 | 2.13.18 | 
-| 3.3.7   | 
-| 3.8.2   |
+| 3.3.8   | 
+| 3.8.4   |
+
 For older versions compatibility see [the tests results](#integration-tests-results)
 
 ## Usage
@@ -114,6 +115,7 @@ Plugin's bugfixes are delivered as x.y.z.λ.
 | PASS        | 3.3.5   |
 | PASS        | 3.3.6   |
 | PASS        | 3.3.7   |
+| PASS        | 3.3.8   |
 | PASS        | 3.4.0   |
 | PASS        | 3.4.1   |
 | PASS        | 3.4.2   |
@@ -132,3 +134,5 @@ Plugin's bugfixes are delivered as x.y.z.λ.
 | PASS        | 3.8.0   |
 | PASS        | 3.8.1   |
 | PASS        | 3.8.2   |
+| PASS        | 3.8.3   |
+| PASS        | 3.8.4   |
