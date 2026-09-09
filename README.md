@@ -1,6 +1,6 @@
 # Mill Explicit Dependencies
 
-[![Latest version](https://img.shields.io/badge/mill_explicit_dependencies-1.1.8-green?logo=scala&logoColor=red&label=Maven)](https://central.sonatype.com/artifact/digital.junkie/mill-explicit-dependencies_3/1.1.8)
+[![Latest version](https://img.shields.io/badge/mill_explicit_dependencies-1.1.9-green?logo=scala&logoColor=red&label=Maven)](https://central.sonatype.com/artifact/digital.junkie/mill-explicit-dependencies_3/1.1.9)
 
 This is a [Mill](https://github.com/com-lihaoyi/mill) Plugin similar to the most useful [SBT](https://github.com/sbt/sbt) [Plugin you ever saw](https://github.com/cb372/sbt-explicit-dependencies) for Scala Modules.
 
@@ -12,7 +12,7 @@ The plugin is available since Mill 1.0.5 and tested against Scala Versions
 |---------|
 | 2.13.18 | 
 | 3.3.8   | 
-| 3.8.4   |
+| 3.9.0   |
 
 For older versions compatibility see [the tests results](#integration-tests-results)
 
@@ -95,3 +95,4 @@ Plugin's bugfixes are delivered as x.y.z.λ.
 |            |             |            |             | 3.8.2   | PASS        |
 |            |             |            |             | 3.8.3   | PASS        |
 |            |             |            |             | 3.8.4   | PASS        |
+|            |             |            |             | 3.9.0   | PASS        |
