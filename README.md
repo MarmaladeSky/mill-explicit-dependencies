@@ -1,20 +1,20 @@
 # Mill Explicit Dependencies
 
-[![Latest version](https://img.shields.io/badge/mill_explicit_dependencies-1.1.10-green?logo=scala&logoColor=red&label=Maven)](https://central.sonatype.com/artifact/digital.junkie/mill-explicit-dependencies_3/1.1.10)
+[![Latest version](https://img.shields.io/badge/mill_explicit_dependencies-1.3.0-green?logo=scala&logoColor=red&label=Maven)](https://central.sonatype.com/artifact/digital.junkie/mill-explicit-dependencies_3/1.3.0)
 
-This is a [Mill](https://github.com/com-lihaoyi/mill) Plugin similar to the most useful [SBT](https://github.com/sbt/sbt) [Plugin you ever saw](https://github.com/cb372/sbt-explicit-dependencies) for Scala Modules.
+This is a [Mill](https://github.com/com-lihaoyi/mill) Plugin similar to the most
+useful [SBT](https://github.com/sbt/sbt)
+[Plugin you ever saw](https://github.com/cb372/sbt-explicit-dependencies) for
+Scala Modules.
 
 ## Compatibility
 
 The plugin is available since Mill 1.0.5 and tested against Scala Versions
 
-| Scala   | 
-|---------|
-| 2.13.18 | 
-| 3.3.8   | 
-| 3.9.0   |
+| Scala | |---------| | 2.13.18 | | 3.3.8 | | 3.9.0 |
 
-For older versions compatibility see [the tests results](#integration-tests-results)
+For older versions compatibility see
+[the tests results](#integration-tests-results)
 
 ## Usage
 
@@ -51,48 +51,31 @@ mill __.unusedCompileDependenciesTest
 ```
 
 ## Versioning
-Plugin version are aligned with Mill's versioning, i.e. $MILL_VERSION may be used.
-Plugin's bugfixes are delivered as x.y.z.λ.
+
+Plugin version are aligned with Mill's versioning, i.e. $MILL_VERSION may be
+used. Plugin's bugfixes are delivered as x.y.z.λ.
 
 ## Integration Tests Results
+
 | Scala 2.12 | Test Result | Scala 2.13 | Test Result | Scala 3 | Test Result |
 |------------|-------------|------------|-------------|---------|-------------|
-| 2.12.0     | FAIL        | 2.13.0     | FAIL        | 3.0.0   | FAIL        |
-| 2.12.1     | FAIL        | 2.13.1     | FAIL        | 3.0.1   | FAIL        |
-| 2.12.2     | FAIL        | 2.13.2     | FAIL        | 3.0.2   | FAIL        |
-| 2.12.3     | FAIL        | 2.13.3     | FAIL        | 3.1.0   | FAIL        |
-| 2.12.4     | FAIL        | 2.13.4     | FAIL        | 3.1.1   | FAIL        |
-| 2.12.5     | FAIL        | 2.13.5     | FAIL        | 3.1.2   | FAIL        |
-| 2.12.6     | FAIL        | 2.13.6     | FAIL        | 3.1.3   | FAIL        |
-| 2.12.7     | FAIL        | 2.13.7     | FAIL        | 3.2.0   | FAIL        |
-| 2.12.8     | FAIL        | 2.13.8     | FAIL        | 3.2.1   | FAIL        |
-| 2.12.9     | FAIL        | 2.13.9     | FAIL        | 3.2.2   | FAIL        |
-| 2.12.10    | FAIL        | 2.13.10    | FAIL        | 3.3.0   | FAIL        |
-| 2.12.11    | FAIL        | 2.13.11    | PASS        | 3.3.1   | PASS        |
-| 2.12.12    | FAIL        | 2.13.12    | PASS        | 3.3.3   | PASS        |
-| 2.12.13    | FAIL        | 2.13.13    | PASS        | 3.3.4   | PASS        |
-| 2.12.14    | FAIL        | 2.13.14    | PASS        | 3.3.5   | PASS        |
-| 2.12.15    | FAIL        | 2.13.15    | PASS        | 3.3.6   | PASS        |
-| 2.12.16    | FAIL        | 2.13.16    | PASS        | 3.3.7   | PASS        |
-| 2.12.17    | FAIL        | 2.13.17    | PASS        | 3.3.8   | PASS        |
-| 2.12.18    | PASS        | 2.13.18    | PASS        | 3.4.0   | PASS        |
-| 2.12.19    | PASS        |            |             | 3.4.1   | PASS        |
-| 2.12.20    | PASS        |            |             | 3.4.2   | PASS        |
-| 2.12.21    | PASS        |            |             | 3.4.3   | PASS        |
-|            |             |            |             | 3.5.0   | PASS        |
-|            |             |            |             | 3.5.1   | PASS        |
-|            |             |            |             | 3.5.2   | PASS        |
-|            |             |            |             | 3.6.2   | PASS        |
-|            |             |            |             | 3.6.3   | PASS        |
-|            |             |            |             | 3.6.4   | PASS        |
-|            |             |            |             | 3.7.0   | PASS        |
-|            |             |            |             | 3.7.1   | PASS        |
-|            |             |            |             | 3.7.2   | PASS        |
-|            |             |            |             | 3.7.3   | PASS        |
-|            |             |            |             | 3.7.4   | PASS        |
-|            |             |            |             | 3.8.0   | PASS        |
-|            |             |            |             | 3.8.1   | PASS        |
-|            |             |            |             | 3.8.2   | PASS        |
-|            |             |            |             | 3.8.3   | PASS        |
-|            |             |            |             | 3.8.4   | PASS        |
-|            |             |            |             | 3.9.0   | PASS        |
+| 2.12.0 | FAIL | 2.13.0 | FAIL | 3.0.0 | FAIL | | 2.12.1 | FAIL | 2.13.1 | FAIL
+| 3.0.1 | FAIL | | 2.12.2 | FAIL | 2.13.2 | FAIL | 3.0.2 | FAIL | | 2.12.3 |
+FAIL | 2.13.3 | FAIL | 3.1.0 | FAIL | | 2.12.4 | FAIL | 2.13.4 | FAIL | 3.1.1 |
+FAIL | | 2.12.5 | FAIL | 2.13.5 | FAIL | 3.1.2 | FAIL | | 2.12.6 | FAIL | 2.13.6
+| FAIL | 3.1.3 | FAIL | | 2.12.7 | FAIL | 2.13.7 | FAIL | 3.2.0 | FAIL | |
+2.12.8 | FAIL | 2.13.8 | FAIL | 3.2.1 | FAIL | | 2.12.9 | FAIL | 2.13.9 | FAIL |
+3.2.2 | FAIL | | 2.12.10 | FAIL | 2.13.10 | FAIL | 3.3.0 | FAIL | | 2.12.11 |
+FAIL | 2.13.11 | PASS | 3.3.1 | PASS | | 2.12.12 | FAIL | 2.13.12 | PASS | 3.3.3
+| PASS | | 2.12.13 | FAIL | 2.13.13 | PASS | 3.3.4 | PASS | | 2.12.14 | FAIL |
+2.13.14 | PASS | 3.3.5 | PASS | | 2.12.15 | FAIL | 2.13.15 | PASS | 3.3.6 | PASS
+| | 2.12.16 | FAIL | 2.13.16 | PASS | 3.3.7 | PASS | | 2.12.17 | FAIL | 2.13.17
+| PASS | 3.3.8 | PASS | | 2.12.18 | PASS | 2.13.18 | PASS | 3.4.0 | PASS | |
+2.12.19 | PASS | | | 3.4.1 | PASS | | 2.12.20 | PASS | | | 3.4.2 | PASS | |
+2.12.21 | PASS | | | 3.4.3 | PASS | | | | | | 3.5.0 | PASS | | | | | | 3.5.1 |
+PASS | | | | | | 3.5.2 | PASS | | | | | | 3.6.2 | PASS | | | | | | 3.6.3 | PASS
+| | | | | | 3.6.4 | PASS | | | | | | 3.7.0 | PASS | | | | | | 3.7.1 | PASS | | |
+| | | 3.7.2 | PASS | | | | | | 3.7.3 | PASS | | | | | | 3.7.4 | PASS | | | | | |
+3.8.0 | PASS | | | | | | 3.8.1 | PASS | | | | | | 3.8.2 | PASS | | | | | | 3.8.3
+| PASS | | | | | | 3.8.4 | PASS | | | | | | 3.9.0 | PASS | | | | | | 3.10.0 |
+PASS |
